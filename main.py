@@ -1,70 +1,41 @@
-import tkinter as tk
-
-from tools.utils import open_pressed, run_pressed
-
+import os 
+import os.path as osp
 
 
-# == 루트 윈도우 생성 == # 
-# ----------------------
-root = tk.Tk()  #Tk 객체 생성. 기본 윈도우 객체
-root.title("Show video segments") # 윈도우 이름 
-root.geometry("800x600")  # 윈도우 크기 
+from tools.video_clip_reader import VideoClipReader
 
 
+def get_video_files(data_dir, sub_dir): 
+    VIDEO_FORMAT = ["avi", "mp4"]
 
-# == 버튼 만들기 (Master 설정 필요) == # 
-# ----------------------------------
-button = tk.Button(
-    master=root, 
-    text="Open video",  
-#    bg="black", 
-#    fg="white", 
-    width = 12, 
-    height= 3, 
-    font=("Modern", 10),
-    command= open_pressed, # 이벤트 입력 
-    )
+    video_list = []
+    video_dir = osp.join(data_dir, sub_dir)
 
-# 버튼 배치 
-button.pack(side="right", anchor="n") # LEFT, RIGHT, TOP, BOTTOM
+    video_list = [file for file in os.listdir(video_dir) 
+                        if file.split('.')[-1] in VIDEO_FORMAT]
+    return video_list 
 
 
 
-# == Entry로 텍스트 입력받기 == # 
-# ----------------------------
-label = tk.Label(master=root, text="NUM_SEGMENTS", width=30, font=("Arial", 10))
 
-entry = tk.Entry(
-    master=root,
-#    bg="black",
-#    fg="white",
-    width=10,
+# ---------------------------------------
+def main():
+    data_dir = osp.join("data") 
+    sub_dir = "falling"
+    video_list = get_video_files(data_dir, sub_dir)
 
-    justify="center",
-    font=("Arial", 10)
-)
-entry.icursor("end")
+    print(video_list)
 
-# entry 배치 
-entry.pack(side="right", anchor="e")
-label.pack(side="right", anchor="ne")
+    idx = 1
+    video_path = osp.join(data_dir, sub_dir, video_list[idx])
 
 
-# == Run 버튼 만들기 == # 
-run_button = tk.Button(
-    master=root, 
-    text="Run",  
-#    bg="black", 
-#    fg="white", 
-    width = 12, 
-    height= 3, 
-    font=("Modern", 10),
-    command= run_pressed, # 이벤트 입력 
-    )
-
-run_button.pack(side="bottom", anchor="center")
+    # == 루트 윈도우 생성 == # 
+    # ----------------------
+    vcr = VideoClipReader(video_path)
+    vcr.mainloop()
 
 
 
-# 메인 루프 실행 
-root.mainloop()
+if __name__ == '__main__':
+    main()
